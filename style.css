@@ -1,0 +1,61 @@
+
+
+body {
+    background-color: #CFD7DA;
+}
+    
+p {
+    font-family: 'helvetica', sans-serif;
+    color: black;
+}
+
+.title {
+    font-family: 'helvetica', sans-serif;
+    font-size: 100px;
+    text-align: center;
+    padding: 100px 0px 0px 0px;
+}
+
+.title span {
+    background-color: yellow;
+    color: #4ECDA4;
+    padding: 0 10px; /* optional: small horizontal breathing room */
+}
+
+h1 {
+    font-family: 'helvetica', sans-serif;
+    font-weight: normal;
+    color: #4ECDA4;
+    padding: 40px 60px;
+    text-align: center;
+}
+
+h2 {
+    font-family: 'helvetica', sans-serif;
+    font-weight: normal;
+    color: #2327AC;
+    padding: 0px 275px 0px 275px;
+    text-align: center;
+}
+
+a:hover {
+    color: #FEFE03;
+    text-decoration: none;
+}
+
+a {
+  font-family: "helvetica", sans-serif;
+  font-weight: normal;
+  text-decoration: none;
+  color: #4ECDA4;
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+}
+
+@font-face {
+    font-family: 'helvetica';
+    src: url(Helvetica.ttf);
+}

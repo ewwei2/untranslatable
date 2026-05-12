@@ -38,6 +38,30 @@ h2 {
     text-align: center;
 }
 
+
+.two-col h2 {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  text-align: left;
+}
+
+.two-col {
+  display: flex;
+  gap: 2rem;
+  padding: 0 18rem 0 20rem;
+}
+
+.two-col h2:last-child {
+  font-size: 1.5rem;
+  max-width: 800px;
+}
+
+.two-col h2:first-child {
+  font-size: 3.25rem;
+}
+
+
 a:hover {
     color: #FEFE03;
     text-decoration: none;

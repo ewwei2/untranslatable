@@ -1,7 +1,7 @@
 var randomColor = ["#4ECDA4", "#FEFE03", "#2327AC"];
 class Letter {
   constructor(x, y) {
-    this.alphabets = ["__img__", "__img__", "__img__", "yit hei","yeet hay", "hot air", "heatiness", "imbalance", "spicy", "greasy", "fried"];
+    this.alphabets = ["__img__", "__img__", "__img__", "yeet hay", "hot air", "heatiness", "imbalance", "spicy", "greasy", "fried"];
     this.letter = random(this.alphabets);
     this.f = random(fonts);
     this.size = random(10, 30);

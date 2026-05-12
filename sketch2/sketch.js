@@ -1,13 +1,18 @@
-// Particle sketch for 手尾 characters
-// Points are pre-sampled from the SVG outlines — no font file needed.
+// particle sketch for 手尾 characters
+// points are pre-sampled from the svg outlines, no need for font files
+
 
 var randomColor = ["#4ECDA4", "#FEFE03", "#2327AC"];
 var b = [];
-var mouseRadius = 120;
-var pullStrength = 0.08;
+var mouseRadius = 200;
+var pullStrength = 0.15;
 var damping = 0.88;
-   
-// Pre-sampled outline points from the SVG paths (coordinate space: x 54-898, y 342-745)
+var textFade; // for text to fade in
+var allHome; // when all balls are at home
+var settleThreshold = 150; // decide when to fade in, how messy the balls should be
+var charOffsetY = 0;
+
+// pre-sampled outline points from the svg paths (coordinate space: x 54-898, y 342-745)
 var RAW_PTS = [
   {x:281.0,y:574.5},{x:281.0,y:558.4},{x:281.0,y:542.3},{x:281.0,y:526.2},{x:281.0,y:510.0},
   {x:288.6,y:501.5},{x:304.7,y:501.5},{x:320.8,y:501.5},{x:336.9,y:501.5},{x:353.0,y:501.5},
@@ -109,20 +114,20 @@ var RAW_PTS = [
   {x:815.8,y:386.2},{x:830.3,y:386.2},{x:837.0,y:394.1},{x:837.0,y:408.7},{x:837.0,y:423.2}
 ];
 
-// Raw coordinate bounds
+// raw coordinate bounds 
 var SVG_MIN_X = 54.7, SVG_MAX_X = 898.3;
 var SVG_MIN_Y = 342.4, SVG_MAX_Y = 745.9;
-
-// Mapped home positions (recalculated on each resize)
 var homePositions = [];
 
+// mapped home positions (recalculated on each resize)
 function mapPoints() {
   var svgW = SVG_MAX_X - SVG_MIN_X;
   var svgH = SVG_MAX_Y - SVG_MIN_Y;
   var pad = 80;
   var scale = min((width - pad * 2) / svgW, (height - pad * 2) / svgH);
-  var offsetX = (width  - svgW * scale) / 2;
+  var offsetX = (width - svgW * scale) / 2;
   var offsetY = (height - svgH * scale) / 2;
+  charOffsetY = offsetY;
 
   homePositions = RAW_PTS.map(function(p) {
     return {
@@ -131,32 +136,10 @@ function mapPoints() {
     };
   });
 
-  // Update each ball's home so they drift to the new center
+   // update each ball's home so they drift to the new center
   for (var i = 0; i < b.length; i++) {
     b[i].homeX = homePositions[i].x;
     b[i].homeY = homePositions[i].y;
-  }
-}
-
-function setup() {
-  createCanvas(windowWidth, 550);
-  mapPoints();
-  for (var i = 0; i < homePositions.length; i++) {
-    b[i] = new Ball(homePositions[i].x, homePositions[i].y);
-  }
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  mapPoints(); // recenters characters to new canvas size
-}
-
-function draw() {
-  background("#CFD7DA");
-  for (var i = 0; i < b.length; i++) {
-    b[i].move();
-    b[i].bounce();
-    b[i].display();
   }
 }
 
@@ -168,7 +151,8 @@ class Ball {
     this.y = random(height);
     this.xspeed = random(-1, 1);
     this.yspeed = random(-1, 1);
-    // this.color =       randomColor[floor(random(randomColor.length))];
+     // this.color =       randomColor[floor(random(randomColor.length))];
+     // tried doing different color balls, looked messy and hard to read
   }
 
   move() {
@@ -189,11 +173,54 @@ class Ball {
   }
 
   display() {
-  fill("#2327AC"); // use the ball's own color
-  noStroke();
-  ellipse(this.x, this.y, 6, 6);
+    fill("#2327AC"); // use the ball's own color
+    noStroke();
+    ellipse(this.x, this.y, 6, 6);
+  }
 }
-  
+
+function setup() {
+  createCanvas(windowWidth, 550);
+  textFade = 0;
+  allHome = false;
+  mapPoints(); 
+  for (var i = 0; i < homePositions.length; i++) {
+    b[i] = new Ball(homePositions[i].x, homePositions[i].y);
+  }
+}
+
+function windowResized() { 
+  resizeCanvas(windowWidth, windowHeight);
+  mapPoints(); // recenters characters to new canvas size
+}
+
+function draw() {
+  background("#CFD7DA");
+
+  for (var i = 0; i < b.length; i++) {
+    b[i].move();
+    b[i].bounce();
+    b[i].display();
+  }
+
+  // check if all balls are near home
+  allHome = b.every(ball => dist(ball.x, ball.y, ball.homeX, ball.homeY) < settleThreshold);
+
+  if (allHome) {
+    textFade = min(textFade + 2, 255); // fade in slowly
+  } else {
+    textFade = max(textFade - 8, 0);   // fade out quickly
+  }
+
+  if (textFade > 0) {
+    push();
+    fill(35, 39, 172, textFade);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    textSize(22);
+   text("hand tail  /  to clean up", width / 2, charOffsetY - 70);
+    pop();
+  }
 }
 
 // sources
@@ -201,7 +228,10 @@ class Ball {
 // by lberdugo
 // https://editor.p5js.org/lberdugo/sketches/fKMgsgetY
 
-// claude was used to replace the .ttf and text with a .svg file because p5.js does not support chinese traditional fonts
+// claude was used to replace the .ttf and text with a .svg file because p5.js does not support chinese traditional fonts unfortunately 
+// prompts i gave:
 // map out the outline in points for these two characters, 手尾 in the svg file
 // replace the font and text with the svg file points you provided me
 // i'm going to have my screen full screen (width: 100vw; height: 100vh), how can i have the characters in the center of the screen every time
+// also prompted claude to put the fade in text above teh characters that adjusts with window sizing, cause sometimes the text would end up behind the image
+// put text above the character that adjusts with window resizing
